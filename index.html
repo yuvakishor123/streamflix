@@ -1,0 +1,184 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>StreamFlix — Static Front Page</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;800&display=swap" rel="stylesheet">
+  <style>
+    :root{
+      --bg:#0b0b0b; --card:#141414; --muted:#b3b3b3; --accent:#e50914; --glass: rgba(255,255,255,0.04);
+      --max-width:1200px;
+    }
+    *{box-sizing:border-box}
+    html,body{height:100%;margin:0;font-family:Inter,system-ui,Arial,sans-serif;background:linear-gradient(180deg,#050505 0%, #071017 100%);color:#fff}
+    .container{max-width:var(--max-width);margin:0 auto;padding:24px}
+
+    /* NAV */
+    header{display:flex;align-items:center;justify-content:space-between;padding:12px 0}
+    .brand{display:flex;align-items:center;gap:12px}
+    .logo{font-weight:800;font-size:22px;color:var(--accent);letter-spacing:1px}
+    nav{display:flex;gap:18px;align-items:center}
+    nav a{color:var(--muted);text-decoration:none;font-size:14px}
+
+    /* search & profile */
+    .tools{display:flex;gap:12px;align-items:center}
+    .search{background:var(--glass);border-radius:6px;padding:6px 10px;display:flex;gap:8px;align-items:center}
+    .search input{background:transparent;border:0;outline:none;color:#fff;width:200px}
+    .avatar{width:36px;height:36px;border-radius:4px;background:linear-gradient(135deg,#333,#111);display:inline-block}
+
+    /* HERO */
+    .hero{margin-top:18px;position:relative;border-radius:10px;overflow:hidden}
+    .hero img{width:100%;height:420px;object-fit:cover;display:block;filter:brightness(0.55)}
+    .hero .meta{position:absolute;left:36px;bottom:36px}
+    .title{font-size:40px;font-weight:800;margin:0}
+    .subtitle{color:var(--muted);margin-top:8px}
+    .hero .cta{margin-top:14px;display:flex;gap:12px}
+    .btn{background:#fff;color:#000;padding:10px 18px;border-radius:6px;font-weight:600;border:0;cursor:pointer}
+    .btn.ghost{background:transparent;color:#fff;border:1px solid rgba(255,255,255,0.12)}
+
+    /* Rows */
+    .row{margin-top:26px}
+    .row h3{margin:0 0 12px 6px;font-size:18px}
+    .cards{display:flex;gap:12px;overflow:auto;padding-bottom:6px}
+    .card{min-width:170px;background:var(--card);border-radius:6px;overflow:hidden;cursor:pointer;flex:0 0 auto;transition:transform .18s ease, box-shadow .18s ease}
+    .card img{width:100%;height:100%;display:block;object-fit:cover}
+    .card:hover{transform:translateY(-8px);box-shadow:0 20px 40px rgba(0,0,0,0.6)}
+    .card .label{padding:8px;font-size:13px;color:var(--muted)}
+
+    /* modal */
+    .modal{position:fixed;inset:0;background:rgba(0,0,0,0.75);display:none;align-items:center;justify-content:center;padding:20px}
+    .modal.active{display:flex}
+    .modal .panel{width:90%;max-width:1000px;background:#0b0b0b;border-radius:10px;overflow:hidden}
+    .modal .poster{height:480px;background-size:cover;background-position:center}
+    .modal .content{padding:18px}
+    .close{position:absolute;right:24px;top:20px;background:transparent;border:0;color:#fff;font-size:22px;cursor:pointer}
+
+    /* responsive */
+    @media (max-width:800px){
+      .hero img{height:260px}
+      .title{font-size:24px}
+      .search input{width:110px}
+      .card{min-width:130px}
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <header>
+      <div class="brand">
+        <div class="logo">STREAMFLIX</div>
+        <nav>
+          <a href="#">Home</a>
+          <a href="#">TV Shows</a>
+          <a href="#">Movies</a>
+          <a href="#">New & Popular</a>
+        </nav>
+      </div>
+
+      <div class="tools">
+        <div class="search" aria-label="search">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M21 21l-4.35-4.35" stroke="#fff" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          <input placeholder="Search" />
+        </div>
+        <div class="avatar" title="Profile"></div>
+      </div>
+    </header>
+
+    <section class="hero">
+      <img src="https://picsum.photos/1200/520?random=101" alt="Hero backdrop"/>
+      <div class="meta">
+        <h1 class="title">The Last Horizon</h1>
+        <div class="subtitle">2019 • Sci-fi, Adventure • 2h 14m</div>
+        <div class="cta">
+          <button class="btn" id="play-hero">Play</button>
+          <button class="btn ghost" id="more-hero">More Info</button>
+        </div>
+      </div>
+    </section>
+
+    <!-- rows of cards -->
+    <div class="row">
+      <h3>Because you watched: Space Operas</h3>
+      <div class="cards" id="row-1"></div>
+    </div>
+
+    <div class="row">
+      <h3>Trending Now</h3>
+      <div class="cards" id="row-2"></div>
+    </div>
+
+    <div class="row">
+      <h3>New Releases</h3>
+      <div class="cards" id="row-3"></div>
+    </div>
+
+  </div>
+
+  <!-- modal -->
+  <div class="modal" id="modal">
+    <div class="panel">
+      <button class="close" id="close">✕</button>
+      <div class="poster" id="modal-poster" style="background-image:url('https://picsum.photos/1000/600?random=200')"></div>
+      <div class="content">
+        <h2 id="modal-title">Title</h2>
+        <p id="modal-desc" style="color:var(--muted)">Description goes here. This is a static demo of a Netflix-like front page. Click outside or press the close button to dismiss.</p>
+        <div style="margin-top:12px"><button class="btn">Play</button><button class="btn ghost" style="margin-left:8px">Add to List</button></div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    // sample dataset
+    const sample = Array.from({length:18}).map((_,i)=>({
+      id:i+1,
+      title:['Skyward','Night Pulse','Deep Sea','The Last Horizon','Red Signal','Afterglow'][i%6] + ' '+(i+1),
+      img:`https://picsum.photos/300/170?random=${30+i}`,
+      poster:`https://picsum.photos/1000/600?random=${200+i}`,
+      desc:'A thrilling story of adventure and discovery. This is placeholder text for the static demo.'
+    }))
+
+    function makeCard(item){
+      const el = document.createElement('div')
+      el.className='card'
+      el.innerHTML = `<img src="${item.img}" alt="${item.title}" loading="lazy">` +
+                     `<div class="label">${item.title}</div>`
+      el.addEventListener('click',()=>openModal(item))
+      return el
+    }
+
+    // populate rows
+    const row1 = document.getElementById('row-1')
+    const row2 = document.getElementById('row-2')
+    const row3 = document.getElementById('row-3')
+    sample.slice(0,6).forEach(i=>row1.appendChild(makeCard(i)))
+    sample.slice(6,12).forEach(i=>row2.appendChild(makeCard(i)))
+    sample.slice(12).forEach(i=>row3.appendChild(makeCard(i)))
+
+    // modal behavior
+    const modal = document.getElementById('modal')
+    const modalPoster = document.getElementById('modal-poster')
+    const modalTitle = document.getElementById('modal-title')
+    const modalDesc = document.getElementById('modal-desc')
+    const closeBtn = document.getElementById('close')
+
+    function openModal(item){
+      modalPoster.style.backgroundImage = `url(${item.poster})`
+      modalTitle.textContent = item.title
+      modalDesc.textContent = item.desc
+      modal.classList.add('active')
+    }
+    function closeModal(){ modal.classList.remove('active') }
+
+    closeBtn.addEventListener('click',closeModal)
+    modal.addEventListener('click',(e)=>{ if(e.target===modal) closeModal() })
+
+    // hero buttons
+    document.getElementById('more-hero').addEventListener('click',()=>openModal(sample[3]))
+    document.getElementById('play-hero').addEventListener('click',()=>alert('Pretend playing trailer...'))
+
+    // keyboard escape
+    window.addEventListener('keydown',e=>{ if(e.key==='Escape') closeModal() })
+  </script>
+</body>
+</html>
