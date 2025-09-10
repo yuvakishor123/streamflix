@@ -7,7 +7,7 @@ pipeline {
         IMAGE_TAG       = "latest"
         CONTAINER_NAME  = "netflix-container"
         HOST_PORT       = "3000"
-        DOCKERHUB_REPO  = "yuvakishor/yuva"
+        DOCKERHUB_REPO  = "yuva"
     }
 
     stages {
@@ -40,8 +40,8 @@ pipeline {
                 withCredentials([usernamePassword(credentialsId: 'dockerhub-creds', usernameVariable: 'DOCKER_USER', passwordVariable: 'DOCKER_PASS')]) {
                     sh '''
                         echo "$DOCKER_PASS" | docker login -u "$DOCKER_USER" --password-stdin
-                        docker tag ${IMAGE_NAME}:${IMAGE_TAG} ${DOCKERHUB_REPO}:${IMAGE_TAG}
-                        docker push ${DOCKERHUB_REPO}:${IMAGE_TAG}
+                        docker tag ${IMAGE_NAME}:${IMAGE_TAG} ${DOCKERHUB_REPO}/${IMAGE_NAME}:${IMAGE_TAG}
+                        docker push ${DOCKERHUB_REPO}/${IMAGE_NAME}:${IMAGE_TAG}
                         docker logout
                     '''
                 }
