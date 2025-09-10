@@ -7,7 +7,7 @@ pipeline {
         IMAGE_TAG       = "latest"
         CONTAINER_NAME  = "netflix-container"
         HOST_PORT       = "3000"
-        DOCKERHUB_REPO  = "yuva"
+        DOCKERHUB_REPO  = "yuvakishor"
     }
 
     stages {
