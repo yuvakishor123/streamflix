@@ -19,10 +19,14 @@ pipeline {
 
         stage('Build Docker Image') {
             steps {
-                sh '''
-                
-                    docker build -t ${IMAGE_NAME}:${IMAGE_TAG} -f ${WORK_DIR}/Dockerfile ${WORK_DIR}
-                '''
+                withCredentials([usernamePassword(credentialsId: 'dockerhub-creds', usernameVariable: 'DOCKER_USER', passwordVariable: 'DOCKER_PASS')]) {
+                    sh '''
+                        echo "$DOCKER_PASS" | docker login -u "$DOCKER_USER" --password-stdin
+                        docker rmi -f ${IMAGE_NAME}:${IMAGE_TAG} || true
+                        docker build -t ${IMAGE_NAME}:${IMAGE_TAG} -f ${WORK_DIR}/Dockerfile ${WORK_DIR}
+                        docker logout
+                    '''
+                }
             }
         }
 
@@ -35,7 +39,7 @@ pipeline {
             }
         }
          
-        stage('Docker Hub Login & Push') {
+        stage('Push to Docker Hub') {
             steps {
                 withCredentials([usernamePassword(credentialsId: 'dockerhub-creds', usernameVariable: 'DOCKER_USER', passwordVariable: 'DOCKER_PASS')]) {
                     sh '''
@@ -49,4 +53,3 @@ pipeline {
         }
     }
 }
-    
